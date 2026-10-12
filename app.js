@@ -50,7 +50,7 @@ function renderMarkers(list){
   $('mapNoteText').textContent=!$('country').value&&!showFavorites?'등록 좌표가 있는 방송국 · 국가별 최대 2개 · 원을 눌러 선택':'방송국 실제 좌표 · 원을 눌러 선택'+(missing?' · 위치 정보 없는 '+missing+'개는 목록에서 선택':'');
   for(const group of groups.values()){
     const selected=group.stations.some(s=>s.stationuuid===current?.stationuuid);
-    const marker=L.circleMarker(group.pos,{radius:selected?8:5,color:selected?'#fff5c3':'#d6f5a3',weight:1.5,fillColor:selected?'#f2e6a3':'#c0ed86',fillOpacity:.9}).addTo(markers);
+    const marker=L.circleMarker(group.pos,{radius:selected?8:5,color:selected?'#fff5c3':'#a3f3bf',weight:1.5,fillColor:selected?'#f2e6a3':'#1ed760',fillOpacity:.9}).addTo(markers);
     const tip=document.createElement('span');tip.textContent=group.stations.map(s=>s.name).join(' / ');marker.bindTooltip(tip);
     if(group.stations.length===1){marker.on('click',()=>tune(group.stations[0]))}
     else{const popup=document.createElement('div');const title=document.createElement('strong');title.textContent='같은 위치의 방송국';popup.append(title);for(const s of group.stations){const button=document.createElement('button');button.className='map-station-choice';button.textContent=s.name;button.onclick=()=>{map.closePopup();tune(s)};popup.append(button)}marker.bindPopup(popup)}
