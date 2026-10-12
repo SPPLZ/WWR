@@ -104,7 +104,7 @@ async function load(){
     if(map){const coords=stations.map(stationPosition).filter(Boolean);if(coords.length)map.fitBounds(coords,{padding:[50,50],maxZoom:6});else if(countryCenters[$('country').value])map.setView(countryCenters[$('country').value],5)}
   }catch{if(id!==request)return;stations=[];if(markers)markers.clearLayers();$('count').textContent='연결 실패';$('browseHint').textContent='';message('방송국 목록에 연결하지 못했어요. 잠시 후 다시 시도해주세요.',true)}
 }
-$('search').oninput=()=>{clearTimeout(debounce);debounce=setTimeout(load,400)};$('search').onkeydown=e=>{if(e.key==='Enter'){clearTimeout(debounce);load()}};$('country').onchange=load;$('genre').onchange=load;
+$('search').oninput=()=>{clearTimeout(debounce);debounce=setTimeout(load,400)};$('search').onkeydown=e=>{if(e.key==='Enter'){clearTimeout(debounce);load()}};$('country').onchange=()=>{closeCountrySearch();load()};$('genre').onchange=load;
 for(const [id,fav] of [['explore',false],['favorites',true]])$(id).onclick=()=>{showFavorites=fav;$('explore').classList.toggle('active',!fav);$('favorites').classList.toggle('active',fav);load()};
 $('random').onclick=()=>{const list=visible();if(list.length)tune(list[Math.floor(Math.random()*list.length)])};
 if(window.L){map=L.map('map',{zoomControl:false,zoomSnap:0.25,minZoom:0,maxZoom:12,worldCopyJump:true}).setView([27,20],3);L.control.zoom({position:'topright'}).addTo(map);const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',subdomains:'abcd',maxZoom:19}).addTo(map);let errors=0;tiles.on('tileerror',()=>{if(++errors>5)$('mapError').hidden=false});tiles.on('tileload',()=>{$('mapError').hidden=true});markers=L.layerGroup().addTo(map);/* Leaflet updates marker positions itself during zoom. */}else $('mapError').hidden=false;
@@ -112,3 +112,21 @@ const codes='AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG B
 
 
 
+
+// Search names using browser CLDR translations, including local scripts.
+const countryLanguages='ko en fr ja zh zh-Hant ar de es pt ru it nl pl uk tr fa he hi bn ur ta te ml kn mr gu pa si ne th vi id ms jv su tl fil my km lo mn ka hy az kk ky uz tg tk ps ku am sw so ha yo ig zu xh af st sn rw ny mg el bg sr hr bs sl mk sq ro hu cs sk da sv nb nn fi is et lv lt ga cy mt eu ca gl be uz bo dz ti om bs sd ug dv'.split(' ');
+const countryEnglish=new Intl.DisplayNames(['en'],{type:'region'});
+const countryTranslators=Intl.DisplayNames.supportedLocalesOf(countryLanguages).map(locale=>new Intl.DisplayNames([locale],{type:'region'}));
+function normalizeCountryQuery(value){return String(value).normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'')}
+const countryAliases={KR:['한국','대한민국','남한','korea','republic of korea','south korea','한국공화국'],KP:['북한','north korea'],US:['미국','usa','united states of america'],GB:['영국','uk','britain','great britain'],CN:['중국','中国','中國','中华人民共和国','中華人民共和國'],TW:['대만','臺灣','台灣'],JP:['일본','日本','日本国'],SA:['사우디','saudi','السعودية','المملكة العربية السعودية'],AE:['uae','الإمارات'],RU:['russia','россия'],VN:['vietnam','việt nam']};
+const countrySearchIndex=codes.map(code=>({code,name:countryName(code),english:countryEnglish.of(code),names:[...new Set([code,countryName(code),countryEnglish.of(code),...(countryAliases[code]||[]),...countryTranslators.map(t=>t.of(code))].map(normalizeCountryQuery))]}));
+function findCountries(query){const q=normalizeCountryQuery(query);if(!q)return [];const exactCode=countrySearchIndex.find(c=>c.code.toLowerCase()===q);if(exactCode)return [exactCode];return countrySearchIndex.filter(c=>c.names.some(n=>n.includes(q))).sort((a,b)=>Number(b.names.includes(q))-Number(a.names.includes(q))||a.name.localeCompare(b.name,'ko'))}
+function closeCountrySearch(){ $('countrySearch').value='';$('countryResults').hidden=true;$('countryResults').replaceChildren();$('countrySearchStatus').textContent=''}
+function chooseCountry(code){$('country').value=code;closeCountrySearch();$('countrySearch').focus();load()}
+function renderCountrySearch(){const results=$('countryResults'),query=$('countrySearch').value;results.replaceChildren();if(!query.trim()){results.hidden=true;return}const matches=findCountries(query);results.hidden=false;$('countrySearchStatus').textContent=matches.length+'개 국가 검색됨';if(!matches.length){const p=document.createElement('p');p.textContent='일치하는 국가가 없습니다. 다른 이름이나 국가 코드를 입력하세요.';results.append(p)}for(const c of matches){const button=document.createElement('button');button.type='button';button.dataset.country=c.code;button.textContent=c.name;const detail=document.createElement('small');detail.textContent=c.english+' · '+c.code;button.append(detail);button.onclick=()=>chooseCountry(c.code);results.append(button)}}
+$('countrySearch').addEventListener('input',e=>{if(!e.isComposing)renderCountrySearch()});
+$('countrySearch').addEventListener('compositionend',renderCountrySearch);
+$('countrySearch').addEventListener('focus',()=>{if($('countrySearch').value)renderCountrySearch()});
+$('countrySearch').addEventListener('keydown',e=>{if(e.isComposing)return;if(e.key==='Escape'){closeCountrySearch();return}if(e.key==='ArrowDown'){e.preventDefault();$('countryResults').querySelector('button')?.focus()}if(e.key==='Enter'){e.preventDefault();const first=findCountries(e.target.value)[0];if(first)chooseCountry(first.code)}});
+$('countryResults').addEventListener('keydown',e=>{const buttons=[...$('countryResults').querySelectorAll('button')],i=buttons.indexOf(document.activeElement);if(e.key==='Escape'){closeCountrySearch();$('countrySearch').focus()}if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();buttons[(i+(e.key==='ArrowDown'?1:-1)+buttons.length)%buttons.length]?.focus()}});
+document.addEventListener('click',e=>{if(!e.target.closest('.country-search-wrap'))$('countryResults').hidden=true});
