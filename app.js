@@ -132,9 +132,9 @@ $('countryResults').addEventListener('keydown',e=>{const buttons=[...$('countryR
 document.addEventListener('click',e=>{if(!e.target.closest('.country-search-wrap'))$('countryResults').hidden=true});
 
 function setStationArt(element,station){
-  element.replaceChildren();const code=String(station.countrycode||'').toUpperCase();
+  element.replaceChildren();element.classList.remove('code-art');const code=String(station.countrycode||'').toUpperCase();
   const img=document.createElement('img');img.loading=element.id==='art'?'eager':'lazy';img.decoding='async';img.referrerPolicy='no-referrer';
-  const fallback=()=>{element.textContent=/^[A-Z]{2}$/.test(code)?code:'♪'};
+  const fallback=()=>{element.classList.add('code-art');const hue=[...code].reduce((n,c)=>n*31+c.charCodeAt(0),0)%360;element.style.setProperty('--art-hue',hue);element.textContent=/^[A-Z]{2}$/.test(code)?code:'♪'};
   element.append(img);let logo='';try{const url=new URL(String(station.favicon||'').trim());if(url.protocol==='https:'||url.protocol==='http:'){url.protocol='https:';logo=url.href}}catch{}
   if(logo){img.alt=station.name+' 로고';img.onerror=fallback;img.src=logo}else fallback();
 }

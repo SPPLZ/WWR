@@ -7,3 +7,5 @@
 
 .station-art{position:relative;overflow:hidden}.station-art img{position:absolute;inset:0;min-height:0;min-width:0}.station .station-art{background:#202623!important}
 
+
+.station .station-art.code-art,.now .station-art.code-art{background:radial-gradient(ellipse at 15% 10%,hsl(var(--art-hue) 35% 32% / .8),transparent 75%),linear-gradient(135deg,hsl(var(--art-hue) 25% 21%),#18201d)!important;box-shadow:inset 0 0 0 1px #ffffff08;color:#f2f7f3;text-shadow:0 2px 8px #0003}
