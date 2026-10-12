@@ -133,6 +133,8 @@ document.addEventListener('click',e=>{if(!e.target.closest('.country-search-wrap
 
 function setStationArt(element,station){
   element.replaceChildren();const code=String(station.countrycode||'').toUpperCase();
-  if(!/^[A-Z]{2}$/.test(code)){element.textContent='♪';return}
-  const img=document.createElement('img');img.src='https://flagcdn.com/w160/'+code.toLowerCase()+'.png';img.alt=countryOf(station)+' 국기';img.loading=element.id==='art'?'eager':'lazy';img.decoding='async';img.onerror=()=>{element.textContent=code};element.append(img);
+  const img=document.createElement('img');img.loading=element.id==='art'?'eager':'lazy';img.decoding='async';img.referrerPolicy='no-referrer';
+  const fallback=()=>{if(!/^[A-Z]{2}$/.test(code)){element.textContent='♪';return}img.alt=countryOf(station)+' 국기';img.onerror=()=>{element.textContent=code};img.src='https://flagcdn.com/w160/'+code.toLowerCase()+'.png'};
+  element.append(img);let logo='';try{const url=new URL(String(station.favicon||'').trim());if(url.protocol==='https:'||url.protocol==='http:'){url.protocol='https:';logo=url.href}}catch{}
+  if(logo){img.alt=station.name+' 로고';img.onerror=fallback;img.src=logo}else fallback();
 }
