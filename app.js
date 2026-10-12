@@ -23,10 +23,31 @@ for(const s of list){if(grouped&&s.countrycode!==previousCountry){previousCountr
 function hasGeo(s){return s.geo_lat!==null&&s.geo_lat!==undefined&&s.geo_long!==null&&s.geo_long!==undefined&&Number.isFinite(+s.geo_lat)&&Number.isFinite(+s.geo_long)&&Math.abs(+s.geo_lat)<=90&&Math.abs(+s.geo_long)<=180}
 function stationPosition(s){return hasGeo(s)?[+s.geo_lat,+s.geo_long]:null}
 
+let overviewStations=[];
+function mapStations(list){
+  if($('country').value||showFavorites)return list;
+  const chosen=list.filter(hasGeo),counts=new Map();
+  for(const s of chosen)counts.set(s.countrycode,(counts.get(s.countrycode)||0)+1);
+  const ids=new Set(chosen.map(s=>s.stationuuid));
+  for(const s of overviewStations){if(ids.has(s.stationuuid)||(counts.get(s.countrycode)||0)>=2)continue;chosen.push(s);ids.add(s.stationuuid);counts.set(s.countrycode,(counts.get(s.countrycode)||0)+1)}
+  return chosen;
+}
+async function loadOverview(id,params){
+  const key='wwr-geo-overview-v1:'+params.toString(),disk=read(key,null);
+  try{
+    if(disk&&Date.now()-disk.time<3600000&&Array.isArray(disk.stations)){overviewStations=disk.stations.filter(hasGeo)}
+    else{
+      const p=new URLSearchParams(params);p.set('has_geo_info','true');p.set('limit','10000');let data=[],offset=0;
+      while(id===request){p.set('offset',String(offset));const page=await api('stations/search?'+p);if(id!==request)return;data.push(...page);if(page.length<10000)break;offset+=10000}
+      if(id!==request)return;overviewStations=twoPerCountry(data.filter(hasGeo));save(key,{time:Date.now(),stations:overviewStations});
+    }
+    if(id===request&&!$('country').value)renderMarkers(visible());
+  }catch{if(id===request)$('mapNoteText').textContent+=' · 지도 방송국 보충 실패: 새로고침해 주세요'}
+}
 function renderMarkers(list){
   if(!map)return;markers.clearLayers();const groups=new Map();let missing=0;
-  for(const s of list){const pos=stationPosition(s);if(!pos){missing++;continue}const key=pos.join(',');if(!groups.has(key))groups.set(key,{pos,stations:[]});groups.get(key).stations.push(s)}
-  $('mapNoteText').textContent='방송국 실제 좌표 · 원을 눌러 선택'+(missing?' · 위치 정보 없는 '+missing+'개는 목록에서 선택':'');
+  for(const s of mapStations(list)){const pos=stationPosition(s);if(!pos){missing++;continue}const key=pos.join(',');if(!groups.has(key))groups.set(key,{pos,stations:[]});groups.get(key).stations.push(s)}
+  $('mapNoteText').textContent=!$('country').value&&!showFavorites?'등록 좌표가 있는 방송국 · 국가별 최대 2개 · 원을 눌러 선택':'방송국 실제 좌표 · 원을 눌러 선택'+(missing?' · 위치 정보 없는 '+missing+'개는 목록에서 선택':'');
   for(const group of groups.values()){
     const selected=group.stations.some(s=>s.stationuuid===current?.stationuuid);
     const marker=L.circleMarker(group.pos,{radius:selected?8:5,color:selected?'#fff5c3':'#d6f5a3',weight:1.5,fillColor:selected?'#f2e6a3':'#c0ed86',fillOpacity:.9}).addTo(markers);
@@ -55,7 +76,9 @@ function countryOrder(a,b){if(a==='KR')return b==='KR'?0:-1;if(b==='KR')return 1
 function twoPerCountry(data){const groups=new Map();for(const s of uniqueStations(data)){if(!/^[A-Z]{2}$/.test(s.countrycode)||!countryCenters[s.countrycode])continue;const group=groups.get(s.countrycode)||[];if(group.length<2)group.push(s);groups.set(s.countrycode,group)}return [...groups.keys()].sort(countryOrder).flatMap(c=>groups.get(c))}
 const countryCache=new Map();let activeCountries;
 async function loadAllCountries(id,params){
-  if(map)map.fitBounds([[-55,-170],[75,180]],{padding:[25,25],maxZoom:3});
+  overviewStations=[];
+  if(map){map.stop();map.invalidateSize();map.fitBounds([[-55,-170],[75,180]],{padding:[25,25],maxZoom:3,animate:false})}
+  void loadOverview(id,params);
   const cacheKey=params.toString(),cached=countryCache.get(cacheKey);
   if(cached){stations=cached;render();$('browseHint').textContent='국가별 재생 클릭 상위 2개 · 실시간 청취자 수가 아닙니다. 등록된 HTTPS 방송이 부족한 국가는 0~1개입니다.';return}
   const disk=read('wwr-country-preview-v3',null);
@@ -84,7 +107,7 @@ async function load(){
 $('search').oninput=()=>{clearTimeout(debounce);debounce=setTimeout(load,400)};$('search').onkeydown=e=>{if(e.key==='Enter'){clearTimeout(debounce);load()}};$('country').onchange=load;$('genre').onchange=load;
 for(const [id,fav] of [['explore',false],['favorites',true]])$(id).onclick=()=>{showFavorites=fav;$('explore').classList.toggle('active',!fav);$('favorites').classList.toggle('active',fav);load()};
 $('random').onclick=()=>{const list=visible();if(list.length)tune(list[Math.floor(Math.random()*list.length)])};
-if(window.L){map=L.map('map',{zoomControl:false,zoomSnap:0.25,minZoom:0,maxZoom:12,worldCopyJump:true}).setView([27,20],3);L.control.zoom({position:'topright'}).addTo(map);const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',subdomains:'abcd',maxZoom:19}).addTo(map);let errors=0;tiles.on('tileerror',()=>{if(++errors>5)$('mapError').hidden=false});tiles.on('tileload',()=>{$('mapError').hidden=true});markers=L.layerGroup().addTo(map);map.on('zoomend',()=>renderMarkers(visible()))}else $('mapError').hidden=false;
+if(window.L){map=L.map('map',{zoomControl:false,zoomSnap:0.25,minZoom:0,maxZoom:12,worldCopyJump:true}).setView([27,20],3);L.control.zoom({position:'topright'}).addTo(map);const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',subdomains:'abcd',maxZoom:19}).addTo(map);let errors=0;tiles.on('tileerror',()=>{if(++errors>5)$('mapError').hidden=false});tiles.on('tileload',()=>{$('mapError').hidden=true});markers=L.layerGroup().addTo(map);/* Leaflet updates marker positions itself during zoom. */}else $('mapError').hidden=false;
 const codes='AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW'.split(' ');codes.sort((a,b)=>countryName(a).localeCompare(countryName(b),'ko')).forEach(c=>$('country').add(new Option(countryName(c),c)));load();
 
 
