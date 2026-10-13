@@ -31,4 +31,7 @@ body{background:#f8fafd;color:#202124}header{background:#f8fafd}.tagline{backgro
 .station .station-art:not(.code-art){background:transparent!important;box-shadow:none}
 
 /* A neutral backing shows through transparent logos without altering opaque artwork. */
-.station-art:not(.code-art) img{background:#fff;border:1px solid #dadce0;border-radius:6px}
+.station-art:not(.code-art) img{background:transparent;border:0;border-radius:6px;z-index:1}
+.station .station-art:not(.code-art),.now .station-art:not(.code-art){background:#bac5cf!important;isolation:isolate}
+.station-art:not(.code-art)::before{content:"";position:absolute;inset:-18px;background-image:var(--logo-image);background-size:cover;background-position:center;filter:blur(18px) saturate(.7);opacity:.55;pointer-events:none;z-index:0}
+html[data-theme="light"] .station .station-art:not(.code-art),html[data-theme="light"] .now .station-art:not(.code-art){background:#e3e9ee!important}
