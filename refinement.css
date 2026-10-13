@@ -94,4 +94,28 @@ html #stationPanel .intro{position:relative}
 html #stationPanel .intro h1{padding-right:40px}
 html #stationPanel #sidebarToggle{top:0;left:auto;right:0;box-shadow:none}
 @media(min-width:651px){html main:not(.sidebar-collapsed) .map-title{left:16px;max-width:calc(100% - 88px)}}
-@media(max-width:650px){html .mobile-view-switch button{display:grid;place-items:center}html #stationPanel .intro h1{padding-right:0}}
+@media(max-width:650px){html .mobile-view-switch button{display:grid;place-items:center}html #stationPanel .intro h1{padding-right:0}}/* Keep the collapsed sidebar control beside the map heading. */
+@media(min-width:651px){
+ html main.sidebar-collapsed .map-title{left:16px;max-width:calc(100% - 88px);padding-right:62px}
+ html .map-title #sidebarToggle{left:auto;right:12px;top:12px;pointer-events:auto;box-shadow:none}
+}/* Mobile playback controls sit above the station/map view. */
+@media(max-width:650px){
+ html .player{position:sticky;top:0;bottom:auto;left:auto;right:auto;height:132px;box-sizing:border-box;border-top:0;border-bottom:1px solid var(--ui-line);z-index:1200}
+ html main{margin-bottom:0}
+}/* Floating mobile player. */
+@media(max-width:650px){
+ html .player{position:fixed;top:auto;bottom:calc(12px + env(safe-area-inset-bottom));left:10px;right:10px;height:122px;border:1px solid var(--ui-line);border-radius:16px;padding:14px 16px;box-shadow:0 8px 32px #0005;z-index:1200}
+ html main{height:calc(100dvh - 254px - env(safe-area-inset-bottom));margin-bottom:calc(146px + env(safe-area-inset-bottom))}
+}/* Let mobile content extend beneath the floating player. */
+@media(max-width:650px){
+ html main{height:calc(100dvh - 108px);margin-bottom:0;padding-bottom:0}
+ html main aside{position:relative;padding-bottom:0}
+ html #stations{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+
+ html .map-note{bottom:calc(156px + env(safe-area-inset-bottom))}
+ html .random{bottom:calc(156px + env(safe-area-inset-bottom))}
+ html .leaflet-control-attribution{margin-bottom:calc(142px + env(safe-area-inset-bottom))}
+}/* Mask content below the floating mobile player. */
+@media(max-width:650px){
+ html .player::after{content:"";position:absolute;top:100%;left:-11px;right:-11px;height:calc(13px + env(safe-area-inset-bottom));background:var(--ui-bg);pointer-events:auto}
+}

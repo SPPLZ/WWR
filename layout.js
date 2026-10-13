@@ -26,6 +26,9 @@
   let collapsed = false;
   // Start with both desktop panels visible; collapse only for this visit.
   function applyCollapsed() {
+    const player = document.querySelector('.player');
+    const anchor = mobile.matches ? document.querySelector('header') : main;
+    if (anchor.nextElementSibling !== player) anchor.after(player);
     main.classList.toggle('sidebar-collapsed', !mobile.matches && collapsed);
     main.dataset.mobileView = mobileView;
     panel.hidden = mobile.matches ? mobileView !== 'stations' : collapsed;
@@ -39,7 +42,7 @@
     toggle.setAttribute('aria-label', label);
     toggle.title = label;
     const keepFocus = document.activeElement === toggle;
-    const parent = collapsed ? mapPanel : panel.querySelector('.intro');
+    const parent = collapsed ? mapPanel.querySelector('.map-title') : panel.querySelector('.intro');
     if (toggle.parentElement !== parent) parent.append(toggle);
     if (keepFocus) toggle.focus({preventScroll:true});
   }
