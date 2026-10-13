@@ -29,3 +29,6 @@ body{background:#f8fafd;color:#202124}header{background:#f8fafd}.tagline{backgro
 
 /* Logo artwork blends into its station card; country-code artwork keeps its color. */
 .station .station-art:not(.code-art){background:transparent!important;box-shadow:none}
+
+/* A neutral backing shows through transparent logos without altering opaque artwork. */
+.station-art:not(.code-art) img{background:#fff;border:1px solid #dadce0;border-radius:6px}
