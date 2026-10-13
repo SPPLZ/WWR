@@ -1,7 +1,55 @@
 (() => {
   const main = document.querySelector('main');
   const handle = document.getElementById('panelResize');
+  const panel = document.getElementById('stationPanel');
   const mobile = matchMedia('(max-width:650px)');
+  const mapPanel = document.querySelector('.map-wrap');
+  let mobileView = 'stations';
+  const switcher = document.createElement('div');
+  switcher.className = 'mobile-view-switch';
+  switcher.setAttribute('role', 'group');
+  switcher.setAttribute('aria-label', '모바일 화면 선택');
+  switcher.innerHTML = '<button type="button" data-view="stations" aria-label="방송국" title="방송국" aria-controls="stationPanel" aria-pressed="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M5 8l13-5M15 12h3M15 16h3"/><circle cx="8.5" cy="14.5" r="2.5"/></svg></button><button type="button" data-view="map" aria-label="지도" title="지도" aria-controls="map" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2V5zM9 3v16M15 5v16"/></svg></button>';
+  main.before(switcher);
+  switcher.addEventListener('click', event => {
+    const button = event.target.closest('button[data-view]');
+    if (!button) return;
+    mobileView = button.dataset.view;
+    applyCollapsed();
+  });
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.id = 'sidebarToggle';
+  toggle.setAttribute('aria-controls', 'stationPanel');
+  toggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M16 9l-3 3 3 3"/></svg>';
+  document.querySelector('.map-wrap').append(toggle);
+  let collapsed = false;
+  // Start with both desktop panels visible; collapse only for this visit.
+  function applyCollapsed() {
+    main.classList.toggle('sidebar-collapsed', !mobile.matches && collapsed);
+    main.dataset.mobileView = mobileView;
+    panel.hidden = mobile.matches ? mobileView !== 'stations' : collapsed;
+    mapPanel.hidden = mobile.matches && mobileView !== 'map';
+    handle.hidden = mobile.matches || collapsed;
+    for (const button of switcher.querySelectorAll('button')) {
+      button.setAttribute('aria-pressed', String(button.dataset.view === mobileView));
+    }
+    toggle.setAttribute('aria-expanded', String(!collapsed));
+    const label = collapsed ? '방송국 사이드바 펼치기' : '방송국 사이드바 접기';
+    toggle.setAttribute('aria-label', label);
+    toggle.title = label;
+    const keepFocus = document.activeElement === toggle;
+    const parent = collapsed ? mapPanel : panel.querySelector('.intro');
+    if (toggle.parentElement !== parent) parent.append(toggle);
+    if (keepFocus) toggle.focus({preventScroll:true});
+  }
+  toggle.addEventListener('click', () => {
+    collapsed = !collapsed;
+    applyCollapsed();
+
+  });
+  applyCollapsed();
+  mobile.addEventListener('change', () => { mobileView = 'stations'; collapsed = false; applyCollapsed(); });
   let width = 360, height = 330, dragging = false;
   try {
     const saved = JSON.parse(localStorage.getItem('wwr-panel-size'));

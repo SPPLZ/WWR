@@ -68,3 +68,30 @@ html .resizing{user-select:none}
 @media(max-width:650px){html main{gap:0}html .map-wrap{height:var(--map-height,330px)}html #panelResize{height:22px;flex:none;cursor:row-resize}html #panelResize::after{left:calc(50% - 24px);top:9px;width:48px;height:4px}}
 
 
+/* Collapsible station sidebar. */
+html main.sidebar-collapsed{grid-template-columns:minmax(0,1fr)}
+html #stationPanel[hidden],html #panelResize[hidden]{display:none}
+html #sidebarToggle{position:absolute;top:16px;left:16px;z-index:600;display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid var(--ui-line);border-radius:6px;background:var(--ui-panel);color:var(--ui-text);cursor:pointer;box-shadow:0 2px 6px #00000012}
+html #sidebarToggle:hover{background:var(--ui-hover)}
+html #sidebarToggle[aria-expanded="false"] svg{transform:rotate(180deg)}
+html .map-title{left:60px;max-width:calc(100% - 136px)}
+@media(max-width:650px){html #sidebarToggle{top:12px;left:12px}html .map-title{left:54px;max-width:calc(100% - 116px)}html main.sidebar-collapsed .map-wrap{height:calc(100dvh - 214px);min-height:330px}}/* Mobile starts with stations; the map is a separate selectable view. */
+html .mobile-view-switch{display:none}
+html .map-wrap[hidden]{display:none}
+@media(max-width:650px){
+ html .mobile-view-switch{display:flex;gap:4px;margin:8px 10px 0;padding:3px;border:1px solid var(--ui-line);border-radius:8px;background:var(--ui-panel);height:40px;box-sizing:border-box}
+ html .mobile-view-switch button{flex:1;border:0;border-radius:5px;background:transparent;color:var(--ui-muted);font-size:12px;font-weight:600}
+ html .mobile-view-switch button[aria-pressed="true"]{background:var(--ui-hover);color:var(--ui-text)}
+ html main{display:block;height:calc(100dvh - 240px);min-height:300px;padding:10px;box-sizing:border-box;margin-bottom:132px}
+ html main aside,html main .map-wrap{height:100%;min-height:0;width:100%;box-sizing:border-box}
+ html main #sidebarToggle,html main #panelResize{display:none}
+ html .map-title{left:12px;max-width:calc(100% - 88px)}
+ html main aside{padding:16px 14px 10px}
+ html .intro h1{font-size:18px}
+ html .intro p{margin-bottom:8px}
+}/* Contextual sidebar control and mobile navigation icons. */
+html #stationPanel .intro{position:relative}
+html #stationPanel .intro h1{padding-right:40px}
+html #stationPanel #sidebarToggle{top:0;left:auto;right:0;box-shadow:none}
+@media(min-width:651px){html main:not(.sidebar-collapsed) .map-title{left:16px;max-width:calc(100% - 88px)}}
+@media(max-width:650px){html .mobile-view-switch button{display:grid;place-items:center}html #stationPanel .intro h1{padding-right:0}}
