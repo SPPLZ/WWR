@@ -118,4 +118,10 @@ html #stationPanel #sidebarToggle{top:0;left:auto;right:0;box-shadow:none}
 }/* Mask content below the floating mobile player. */
 @media(max-width:650px){
  html .player::after{content:"";position:absolute;top:100%;left:-11px;right:-11px;height:calc(13px + env(safe-area-inset-bottom));background:var(--ui-bg);pointer-events:auto}
+}/* Follow the lower rounded corners when masking content beneath the player. */
+@media(max-width:650px){
+ html .player::after{top:calc(100% - 16px);height:calc(29px + env(safe-area-inset-bottom));background:radial-gradient(circle at 27px 0,transparent 16px,var(--ui-bg) 16.5px) left top / 27px 16px no-repeat,radial-gradient(circle at 0 0,transparent 16px,var(--ui-bg) 16.5px) right top / 27px 16px no-repeat,linear-gradient(var(--ui-bg),var(--ui-bg)) left 16px / 100% calc(100% - 16px) no-repeat;pointer-events:none}
+}/* Draw the full player outline above the lower corner mask. */
+@media(max-width:650px){
+ html .player::before{content:"";position:absolute;inset:-1px;border:1px solid var(--ui-line);border-radius:inherit;pointer-events:none;z-index:1}
 }
