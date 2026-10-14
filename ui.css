@@ -773,3 +773,12 @@ html .geometry-managed .handle-ne{top:0;right:0;cursor:nesw-resize}html .geometr
 html .geometry-managed .handle-se{bottom:0;right:0;cursor:nwse-resize}html .geometry-managed .handle-sw{bottom:0;left:0;cursor:nesw-resize}
 html .geometry-managed.is-collapsed .resize-handle{display:none}
 html .geometry-managed .resize-handle:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+@media(max-width:650px){html .geometry-managed header{cursor:default}html .geometry-managed .panel-grip{cursor:pointer}}
+
+/* Phones retain the standard floating inset; tablets keep free geometry. */
+html main .radio-float.geometry-managed.phone-panel{border-radius:16px;border:1px solid var(--border-color)}
+html .geometry-managed.phone-panel header{cursor:default}
+html .geometry-managed.phone-panel .panel-grip{cursor:pointer}
+html .geometry-managed.phone-panel .resize-handle:not(.handle-n){display:none}
+html .geometry-managed:not(.phone-panel) header,html .geometry-managed:not(.phone-panel) .panel-grip{cursor:grab}

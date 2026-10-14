@@ -2,7 +2,7 @@
 function initPanelGeometry(shell, grip, setOpen) {
   const key = 'wwr-panel-geometry-v2';
   const clamp = (n, min, max) => Math.max(min, Math.min(n, max));
-  const mode = () => innerWidth <= 650 ? 'mobile' : 'desktop';
+  const mode = () => (innerWidth <= 600 || (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches && Math.min(innerWidth,innerHeight) <= 600)) ? 'mobile' : 'desktop';
   let saved = {}, state, gesture = null, suppressUntil = 0;
   try { saved = JSON.parse(localStorage.getItem(key)) || {}; } catch {}
   if (typeof saved !== 'object' || Array.isArray(saved)) saved = {};
@@ -15,9 +15,16 @@ function initPanelGeometry(shell, grip, setOpen) {
     const height = collapsed() ? 121 : state.h;
     state.x = clamp(state.x,12, Math.max(12,innerWidth-state.w-12));
     state.y = clamp(state.y,12, Math.max(12,innerHeight-height-12));
+    // Mobile stays centered above the bottom edge, including after restoring old positions.
+    if(mode() === 'mobile') {
+      state.w = Math.max(1,innerWidth-24);
+      state.x = 12;
+      state.y = Math.max(12,innerHeight-height-12);
+    }
   }
   function paint() {
     fit();
+    if(mode() === 'mobile')shell.classList.add('phone-panel');else shell.classList.remove('phone-panel');
     for (const [name,value] of Object.entries({x:state.x,y:state.y,w:state.w,h:collapsed()?121:state.h})) {
       shell.style.setProperty('--panel-'+name,value+'px');
     }
@@ -48,6 +55,7 @@ function initPanelGeometry(shell, grip, setOpen) {
     shell.append(handle);
   }
   function resize(start,dir,dx,dy) {
+    if(mode() === 'mobile' && dir !== 'n')return;
     const b=bounds(), minW=Math.min(320,b.w), minH=Math.min(480,b.h);
     const right=start.x+start.w, bottom=start.y+start.h;
     state={...start};
@@ -61,6 +69,7 @@ function initPanelGeometry(shell, grip, setOpen) {
     if(gesture || e.button!==0 || e.isPrimary===false)return;
     const target=e.target, handle=target.closest('.resize-handle');
     const onGrip=grip.contains(target);
+    if(mode() === 'mobile' && (!handle || handle.dataset.dir !== 'n'))return;
     if(!handle&&!onGrip&&target.closest('button,input,select,textarea,a,label,#stations,[contenteditable]'))return;
     if(handle&&collapsed())return;
     suppressUntil=0;
@@ -107,6 +116,7 @@ function initPanelGeometry(shell, grip, setOpen) {
   }
   grip.addEventListener('click',()=>changeOpen(collapsed()));
   grip.addEventListener('keydown',e=>{
+    if(mode() === 'mobile')return;
     if(!e.altKey||!e.key.startsWith('Arrow'))return;
     e.preventDefault();const step=e.shiftKey?32:8;
     state.x+=e.key==='ArrowRight'?step:e.key==='ArrowLeft'?-step:0;
