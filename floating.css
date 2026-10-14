@@ -64,3 +64,16 @@ html .panel-grip{height:32px}html .panel-grip span{background:#93989c}html .pane
 /* Keep appearance control available above the map. */
 html body > .theme-toggle{position:fixed;top:calc(16px + env(safe-area-inset-top));right:20px;z-index:1400;width:32px;height:32px;border:1px solid var(--ui-line);background:var(--ui-panel);color:var(--ui-text);box-shadow:0 2px 10px #0002}
 @media(max-width:650px){html body > .theme-toggle{top:calc(12px + env(safe-area-inset-top));right:12px}}
+/* Bottom-anchored panel, resized from its upper-right corner. */
+html .radio-float{top:auto;width:var(--float-width,370px);height:var(--float-height,720px);max-height:calc(100dvh - 40px)}
+html .radio-float.is-collapsed{height:auto}
+html .float-resize{position:absolute;right:3px;top:3px;width:30px;height:30px;padding:0;border:0;background:transparent;color:var(--ui-muted);cursor:nesw-resize;touch-action:none;z-index:2}
+html .float-resize::before{content:'';position:absolute;right:8px;top:8px;width:9px;height:9px;border-top:2px solid currentColor;border-right:2px solid currentColor;border-radius:1px}
+html .float-resize:hover{color:var(--ui-text)}html .float-resize:focus-visible{outline:2px solid var(--ui-muted);outline-offset:-3px;border-radius:8px}
+html .radio-float.is-collapsed .float-resize{display:none}
+@media(max-width:650px){html .radio-float{width:auto;height:var(--float-height,70dvh);max-height:calc(100dvh - 24px - env(safe-area-inset-bottom))}html .radio-float.is-collapsed{height:auto}html .float-resize{cursor:ns-resize}}
+
+html .float-resize::before{opacity:0}
+
+
+
