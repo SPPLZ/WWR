@@ -1,0 +1,66 @@
+/* Map-first floating workspace. */
+html body{overflow:hidden}
+html header{position:fixed;inset:16px 20px auto;z-index:1300;height:44px;padding:0 12px;border:1px solid var(--ui-line);border-radius:12px;background:var(--ui-panel);box-shadow:0 4px 20px #0002;gap:12px}
+html .brand{font-size:20px}html .tagline{font-size:10px}
+html .theme-toggle{width:32px;height:32px;padding:0;font-size:0;border-radius:50%;display:grid;place-items:center}
+html .theme-toggle::after{content:'☾';font-size:18px}html[data-theme="dark"] .theme-toggle::after{content:'☀'}
+html .floating-open{border:1px solid var(--ui-line);border-radius:7px;padding:7px 10px;background:var(--ui-hover);color:var(--ui-text);font-size:11px;white-space:nowrap}
+html main,html main.sidebar-collapsed{position:fixed;inset:0;display:block;width:100%;height:100dvh;min-height:0;margin:0;padding:0}
+html main .map-wrap{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:0}
+html main #stationPanel{position:absolute;z-index:800;left:20px;top:76px;bottom:118px;width:360px;height:auto;min-height:0;padding:0 20px 12px;border-radius:18px;border:1px solid var(--ui-line);background:var(--ui-panel);box-shadow:0 12px 48px #0005;display:flex;flex-direction:column}
+html main #stationPanel[hidden]{display:none}
+html .panel-grip{display:grid;place-items:center;flex:none;width:100%;height:28px;padding:0;background:none;border:0;touch-action:none;cursor:pointer}
+html .panel-grip span{width:42px;height:5px;background:var(--ui-muted);opacity:.65;border-radius:10px}
+html #stationPanel .intro h1{padding:0;font-size:23px;margin:8px 0 14px}html #stationPanel .intro p{display:none}
+html #stations{gap:0;padding-bottom:12px}
+html .station{border-radius:0;border-bottom:1px solid var(--ui-line);padding:12px 0;min-height:70px}
+html .station strong{font-size:14px;font-weight:500}html .country-heading{font-size:12px;padding:20px 0 10px}
+html .station.selected{box-shadow:none;background:var(--ui-hover)}
+html .station-toolbar{padding:10px 0}html .filters{margin-bottom:10px}
+html .map-title{display:none}html .map-note{left:auto;right:20px;bottom:120px;max-width:360px}
+html .random{bottom:168px;right:20px;left:auto}
+html .leaflet-control-zoom{margin-top:82px!important}
+html .leaflet-control-attribution{margin-bottom:0}
+html .player{position:fixed;left:20px;right:20px;bottom:16px;top:auto;height:86px;border:1px solid var(--ui-line);border-radius:16px;box-shadow:0 8px 32px #0004;z-index:1200;background:var(--ui-panel)}
+html .player::before,html .player::after{display:none}
+html .mobile-view-switch,html #panelResize,html #sidebarToggle{display:none!important}
+@media(max-width:650px){
+ html header{inset:10px 12px auto;height:44px;padding:0 10px;gap:8px}
+ html .tagline{display:none}html .header-meta{margin-left:auto}html .brand{font-size:19px}html .logo{font-size:22px}
+ html main #stationPanel{left:12px;right:12px;top:auto;bottom:calc(144px + env(safe-area-inset-bottom));width:auto;height:62dvh;max-height:calc(100dvh - 214px);padding:0 16px 10px;border-radius:18px}
+ html #stationPanel .intro h1{font-size:21px;margin:2px 0 10px}
+ html .player{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));height:120px;padding:12px 16px}
+ html .map-note{right:12px;bottom:150px;max-width:calc(100% - 24px)}html .random{right:12px;bottom:198px}
+ html .leaflet-control-zoom{margin-top:70px!important;margin-right:12px!important}
+ html .station strong{font-size:13px}html .ai-notice{font-size:8px}html .data-credit{font-size:8px}
+}
+/* One floating surface for browsing and playback. */
+html .radio-float{position:absolute;z-index:1100;left:20px;bottom:20px;top:20px;width:390px;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--ui-line);border-radius:18px;background:var(--ui-panel);box-shadow:0 12px 48px #0005}
+html .radio-float header{position:static;inset:auto;height:auto;min-height:48px;flex:none;border:0;border-radius:0;padding:0 18px 12px;box-shadow:none;gap:10px;flex-wrap:wrap}
+html .radio-float header[hidden],html .radio-float .panel-grip[hidden]{display:none}
+html .radio-float header .brand,html .radio-float header .tagline{display:none}
+html .radio-float header h1{font-size:22px;margin:0;flex:1;min-width:130px;letter-spacing:-.6px}
+html .radio-float .header-meta{gap:3px;flex-direction:column;align-items:flex-end;margin-left:auto}
+html .radio-float .app-version{border:0;padding:0;font-size:9px}
+html main .radio-float #stationPanel{position:static;inset:auto;width:100%;height:auto;max-height:none;flex:1;min-height:0;padding:0 18px 10px;border:0;border-radius:0;box-shadow:none}
+html .radio-float .intro{display:none}
+html .radio-float .player{position:static;inset:auto;width:100%;height:118px;min-height:118px;flex:none;display:grid;grid-template-columns:minmax(0,1fr) auto;padding:12px 18px;gap:8px;border:0;border-top:1px solid var(--ui-line);border-radius:0;box-shadow:none;box-sizing:border-box}
+html .radio-float .play-controls{gap:10px}html .radio-float .volume{grid-column:1/-1;justify-content:space-between}html .radio-float .volume input{width:auto;flex:1;min-width:0}html .radio-float .now strong{max-width:220px;font-size:12px}html .radio-float #status{font-size:9px}html .radio-float .now{gap:10px}
+html .float-bottom{flex:none;padding:0 12px 10px;display:flex}
+html .float-bottom .floating-open{width:100%;height:34px;background:var(--ui-hover);border:0;color:var(--ui-text)}
+html .radio-float.is-collapsed{top:auto}
+html .map-note{bottom:20px}html .random{bottom:66px}
+@media(max-width:650px){
+ html .radio-float{left:12px;right:12px;width:auto;top:auto;bottom:calc(12px + env(safe-area-inset-bottom));height:82dvh;max-height:calc(100dvh - 24px - env(safe-area-inset-bottom))}
+ html .radio-float.is-collapsed{height:auto}
+ html .radio-float header{padding:0 16px 10px}html .radio-float header h1{font-size:21px}
+ html main .radio-float #stationPanel{padding:0 16px 8px}
+ html .radio-float .player{padding:12px 16px}
+ html .map-note{bottom:190px}html .random{bottom:236px}
+}
+
+html .panel-grip{height:32px}html .panel-grip span{background:#93989c}html .panel-grip:hover span{opacity:1}html .panel-grip:focus-visible{outline:2px solid var(--ui-muted);outline-offset:-4px}html .radio-float.is-collapsed .player{border-top:0}
+
+/* Keep appearance control available above the map. */
+html body > .theme-toggle{position:fixed;top:calc(16px + env(safe-area-inset-top));right:20px;z-index:1400;width:32px;height:32px;border:1px solid var(--ui-line);background:var(--ui-panel);color:var(--ui-text);box-shadow:0 2px 10px #0002}
+@media(max-width:650px){html body > .theme-toggle{top:calc(12px + env(safe-area-inset-top));right:12px}}
