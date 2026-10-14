@@ -7,3 +7,45 @@ html #mute::before{content:'volume_up'}html #mute[aria-label='음소거 해제']
 html #favoriteNow::before,html .heart::before{content:'favorite'}html #favoriteNow[aria-pressed='true']::before,html .heart[aria-pressed='true']::before{font-variation-settings:'FILL' 1}
 html #listView::before{content:'view_list';font-size:20px}html #gridView::before{content:'grid_view';font-size:20px}
 html .country-search > span::before{content:'search';font-size:20px}html .random > span::before{content:'shuffle';font-size:18px}
+
+/* ==========================================================================
+   WWR Icon Center Alignment Patch (official-icons.css patch)
+   ========================================================================== */
+
+/* 1. 아이콘 컨테이너 버튼/스팬 요소 flex 중앙 정렬 */
+html .theme-toggle,
+html #play,
+html #mute,
+html #favoriteNow,
+html .heart,
+html #listView,
+html #gridView,
+html .country-search > span,
+html .random > span {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+}
+
+/* 2. Pseudo-element ::before / ::after 중앙 정렬 및 베이스라인 여백 제거 */
+html .theme-toggle::after,
+html #play::before,
+html #mute::before,
+html #favoriteNow::before,
+html .heart::before,
+html #listView::before,
+html #gridView::before,
+html .country-search > span::before,
+html .random > span::before {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  height: 1em !important;
+  width: 1em !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: content-box !important;
+}
+

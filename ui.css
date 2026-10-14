@@ -1,0 +1,769 @@
+/* ==========================================================================
+   WWR (World Web Radio) v1.4.3 - Refined Design System (gemini-design.css)
+   ========================================================================== */
+
+/* 1. System Tokens & Root Variables */
+:root {
+  --font-main: 'DM Sans', 'Noto Sans KR', sans-serif;
+  --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  
+  /* Dark Theme Default */
+  --bg-app: #101213;
+  --bg-panel: #191c1e;
+  --bg-sub: #191c1e;
+  --bg-hover: #22282b;
+  --bg-active: #22282b;
+  
+  --border-color: #2b3033;
+  --border-light: #2b3033;
+  
+  --text-main: #eceeef;
+  --text-muted: #929a9e;
+  --text-sub: #929a9e;
+  
+  --accent: #91bca5;
+  --accent-hover: #91bca5;
+  --accent-light: #22282b;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  
+  --shadow-panel: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme="light"] {
+  --bg-app: #f2f3f4;
+  --bg-panel: #fff;
+  --bg-sub: #fff;
+  --bg-hover: #f4f6f7;
+  --bg-active: #f4f6f7;
+  
+  --border-color: #e2e5e7;
+  --border-light: #e2e5e7;
+  
+  --text-main: #252a2d;
+  --text-muted: #70797e;
+  --text-sub: #70797e;
+  
+  --accent: #2962a3;
+  --accent-hover: #2962a3;
+  --accent-light: #f4f6f7;
+  
+  --shadow-panel: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+/* 2. Global Resets & Layout */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  font-family: var(--font-main);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 3. Independent Top-Right Theme Toggle Button */
+html body > .theme-toggle {
+  position: fixed !important;
+  top: calc(14px + env(safe-area-inset-top));
+  right: 16px;
+  z-index: 2000;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel);
+  color: var(--text-main);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+html body > .theme-toggle:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+}
+
+/* 4. Fullscreen Map Section */
+main {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: block !important;
+}
+
+.map-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0 !important;
+  border: none !important;
+  background: var(--bg-app);
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+/* Leaflet Custom Styling */
+.leaflet-container {
+  font-family: var(--font-main) !important;
+}
+
+html[data-theme="dark"] .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) saturate(.06) brightness(.65) !important;
+}
+
+html[data-theme="light"] .leaflet-tile-pane {
+  filter: saturate(.7) contrast(.96) brightness(1.03) !important;
+}
+
+.leaflet-control-zoom {
+  margin-top: 20px !important;
+  margin-right: 16px !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.leaflet-control-zoom a {
+  background: var(--bg-panel) !important;
+  color: var(--text-main) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--bg-hover) !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(15, 17, 21, 0.75) !important;
+  color: var(--text-muted) !important;
+  font-size: 10px !important;
+  backdrop-filter: blur(4px);
+  padding: 2px 8px !important;
+  border-top-left-radius: var(--radius-sm);
+}
+
+html[data-theme="light"] .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8) !important;
+}
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: var(--bg-panel) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-panel) !important;
+}
+
+/* Map Overlays */
+.map-title, .map-note, .random {
+  position: absolute;
+  z-index: 500;
+}
+
+.map-title {
+  display: none !important; /* Clean Map View */
+}
+
+.map-note {
+  right: 16px;
+  bottom: 20px;
+  left: auto;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+  box-shadow: var(--shadow-sm);
+  max-width: 320px;
+  backdrop-filter: blur(8px);
+}
+
+.random {
+  right: 16px;
+  bottom: 64px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.random:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+  transform: none;
+}
+
+/* 5. Integrated Floating Workspace Panel (List + Player) */
+.radio-float {
+  position: absolute !important;
+  z-index: 1100;
+  left: 16px;
+  bottom: 16px;
+  width: var(--float-width, 380px);
+  height: var(--float-height, 680px);
+  max-height: calc(100dvh - 32px);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+  transition: height 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.radio-float.is-collapsed {
+  height: auto !important;
+}
+
+/* Transparent Resize Control (Top-Right of Floating Panel) */
+.float-resize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent !important;
+  color: transparent !important;
+  cursor: nesw-resize;
+  touch-action: none;
+  z-index: 10;
+}
+
+.float-resize::before {
+  display: none !important; /* Fully transparent per request */
+}
+
+.radio-float.is-collapsed .float-resize {
+  display: none;
+}
+
+/* Panel Top Drag/Collapse Handle Bar */
+.panel-grip {
+  width: 100%;
+  height: 24px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.panel-grip span {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-light);
+  transition: background 0.15s ease, opacity 0.15s ease;
+  opacity: 0.7;
+}
+
+.panel-grip:hover span {
+  opacity: 1;
+  background: var(--text-muted);
+}
+
+/* Header inside Floating Panel */
+.radio-float header {
+  padding: 0 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.radio-float header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.radio-float .header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-family: var(--font-main);
+  color: var(--text-muted);
+}
+
+.radio-float .app-version {
+  letter-spacing: normal;
+  font-size: 10px;
+  padding: 1px 5px;
+  background: var(--bg-sub);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+/* Sidebar Station Library Panel */
+main .radio-float #stationPanel {
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  flex: 1;
+  min-height: 0;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.country-search-wrap {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-sub);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  transition: border-color 0.15s ease;
+}
+
+.search:focus-within {
+  border-color: var(--accent);
+}
+
+.search input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-main);
+  font-size: 12px;
+}
+
+.search input::placeholder {
+  color: var(--text-sub);
+}
+
+.country-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-panel);
+  z-index: 1200;
+}
+
+.country-results button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.country-results button:hover {
+  background: var(--bg-hover);
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.filters select {
+  flex: 1;
+  background: var(--bg-sub);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  padding: 6px 10px;
+  font-size: 11px;
+  outline: none;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 8px;
+}
+
+.tabs button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.station-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.list-heading {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.view-switch {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-sub);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.view-switch button {
+  width: 26px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.view-switch button[aria-pressed="true"] {
+  background: var(--bg-panel);
+  color: var(--text-main);
+}
+
+/* Stations Scroll List */
+#stations {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 120px;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+/* List Item View */
+.station {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  margin-bottom: 2px;
+  transition: background 0.12s ease;
+}
+
+.station:hover {
+  background: var(--bg-hover);
+}
+
+.station.selected {
+  background: var(--accent-light);
+  border-color: var(--accent);
+}
+
+.station-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.station-art {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-sub);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.station-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.station-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.station strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.station small {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.heart {
+  background: transparent;
+  border: none;
+  color: var(--text-sub);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.heart:hover, .heart.saved {
+  color: var(--accent);
+}
+
+/* Grid View Custom Override */
+html[data-station-view="grid"] #stations {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+html[data-station-view="grid"] #stations .station {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px;
+  background: var(--bg-sub);
+  position: relative;
+}
+
+html[data-station-view="grid"] #stations .station-pick {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+html[data-station-view="grid"] #stations .station-art {
+  width: 100%;
+  height: 72px;
+}
+
+html[data-station-view="grid"] #stations .heart {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.4);
+}
+
+.ai-notice, .data-credit {
+  font-size: 10px;
+  color: var(--text-sub);
+  margin-top: 6px;
+  text-align: center;
+}
+
+/* Hide Default Desktop Header */
+body > header {
+  display: none !important;
+}
+
+/* 7. Mobile View Adjustments (< 650px) */
+@media (max-width: 650px) {
+  .radio-float {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    height: var(--float-height, 68dvh) !important;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-bottom)) !important;
+  }
+
+  .float-resize {
+    cursor: ns-resize;
+  }
+
+  .map-note {
+    right: 12px;
+    bottom: calc(140px + env(safe-area-inset-bottom));
+    max-width: calc(100% - 24px);
+  }
+
+  .random {
+    right: 12px;
+    bottom: calc(184px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Compatibility adjustments after reviewing Gemini's design against the existing app. */
+html[data-theme]{--ui-panel:var(--bg-panel);--ui-text:var(--text-main);--ui-muted:var(--text-muted);--ui-line:var(--border-color);--ui-hover:var(--bg-hover);--ui-accent:var(--accent)}
+html .radio-float{background:var(--bg-panel);border-color:var(--border-color);border-radius:16px;box-shadow:var(--shadow-panel);transition:none}
+html .radio-float header{background:transparent;padding:0 16px 12px;border-bottom:1px solid var(--border-color)}
+html .radio-float header h1{font-size:20px;letter-spacing:-.5px;color:var(--text-main)}
+html main .radio-float #stationPanel{padding:12px 16px 8px;background:transparent}
+html main .radio-float #stationPanel[hidden],html .radio-float header[hidden],html .radio-float.is-collapsed .float-resize{display:none!important}
+
+
+
+
+html .search{padding:8px 10px;border-radius:8px;background:var(--bg-sub);border-color:var(--border-color)}
+html .search input{font-size:12px;color:var(--text-main)}html .country-search>span{display:flex;align-items:center}
+html .filters{margin:0 0 8px}html .filters select{padding:8px;border-radius:6px;background:var(--bg-sub);color:var(--text-main);border-color:var(--border-color)}
+html .tabs{padding-bottom:0;gap:12px}html .tabs button{flex:initial;padding:8px 0;border-radius:0;background:none;color:var(--text-muted)}html .tabs button.active{background:none;color:var(--accent);border-bottom:2px solid var(--accent)}
+html .station-toolbar{padding:4px 0;margin:0 0 4px}html #stations{min-height:0}
+html .country-heading{padding:14px 0 8px;color:var(--text-muted);font-size:11px}
+html .station{padding:10px 4px;border-radius:8px;color:var(--text-main)}html .station.selected{background:var(--accent-light);border-color:var(--accent)}html .station strong{font-size:13px;color:var(--text-main)}
+html .station-art img{object-fit:contain!important}
+html[data-station-view='grid'] #stations .station{padding:10px;background:var(--bg-sub)}html[data-station-view='grid'] #stations .country-heading{grid-column:1/-1}
+html .radio-float .ai-notice,html .radio-float .data-credit{font-size:9px;text-align:left;color:var(--text-muted)}
+html .leaflet-control-zoom{margin-top:72px!important}
+html .float-resize::before{display:block!important;opacity:0}
+html button:focus-visible,html a:focus-visible,html select:focus-visible,html input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:650px){html .radio-float.is-collapsed{height:auto!important}html .radio-float header h1{font-size:19px}}
+@media(prefers-reduced-motion:reduce){html *,html *::before,html *::after{transition:none!important;animation:none!important}}
+
+
+/* Current player: identical geometry in list/card and expanded/collapsed states. */
+html .radio-float .panel-grip { height:32px; flex:0 0 32px; }
+html .radio-float .panel-grip span { width:42px; height:5px; background:#93989c; border-radius:10px; }
+html .radio-float .player {
+  position:static; inset:auto; width:100%; height:118px; min-height:118px;
+  flex:0 0 118px; display:grid; grid-template-columns:minmax(0,1fr) 72px;
+  grid-template-rows:minmax(0,1fr) 24px; align-items:center; gap:8px;
+  padding:12px 16px; margin:0; border:0; border-top:1px solid var(--border-color);
+  border-radius:0; box-shadow:none; background:var(--bg-sub); overflow:hidden;
+}
+html .radio-float.is-collapsed .player { border-top-color:transparent; }
+html .radio-float .now { display:flex; align-items:center; gap:10px; min-width:0; overflow:hidden; }
+html .radio-float .now > div:last-child { flex:1; min-width:0; }
+html .radio-float .now #art {
+  width:44px; min-width:44px; max-width:44px; height:44px; min-height:44px;
+  max-height:44px; flex:0 0 44px; border-radius:5px; font-size:20px; box-shadow:none;
+}
+html .radio-float .now #art img { width:100%; height:100%; object-fit:contain; }
+html .radio-float .now .eyebrow { font-size:8px; line-height:12px; letter-spacing:1px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+html .radio-float .now strong { display:block; font-size:12px; line-height:18px; font-weight:600; margin:3px 0; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text-main); }
+html .radio-float #status { font-size:9px; line-height:14px; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text-muted); }
+html .radio-float .play-controls { display:flex; align-items:center; justify-content:flex-end; width:72px; min-width:72px; gap:8px; }
+html .radio-float #favoriteNow { display:grid; place-items:center; width:24px; height:40px; flex:0 0 24px; padding:0; background:none; border:0; color:var(--text-main); }
+html .radio-float #play { display:grid; place-items:center; width:40px; height:40px; flex:0 0 40px; padding:0; border:0; border-radius:50%; background:var(--text-main); color:var(--bg-panel); }
+html .radio-float #play:hover { background:var(--text-main); transform:none; }
+html .radio-float .volume { grid-column:1/-1; display:flex; align-items:center; gap:8px; width:100%; min-width:0; }
+html .radio-float #mute { display:grid; place-items:center; flex:0 0 24px; width:24px; height:24px; padding:0; background:none; border:0; color:var(--text-muted); }
+html .radio-float #volume { width:0; min-width:0; flex:1; accent-color:var(--accent); }
+html .radio-float #volumeValue { width:28px; flex:0 0 28px; font-size:9px; text-align:right; color:var(--text-muted); }
+html .radio-float .equalizer { display:none; }
+html .radio-float #stations { flex:1 1 0; min-height:0; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; }
+html .radio-float #stationPanel > :not(#stations) { flex-shrink:0; }
+html[data-station-view="grid"] #stations { grid-template-columns:repeat(2,minmax(0,1fr)); }
+html[data-station-view="grid"] #stations .station-art { height:96px; flex:0 0 96px; }
+
+/* Original pre-Gemini surface colors; geometry stays unchanged. */
+html .search{background:var(--bg-app)}
+html .tabs button.active{color:var(--text-main)}
+html .station.selected{background:var(--bg-hover);border-color:var(--border-color)}
+html[data-station-view="grid"] #stations .station{background:var(--bg-hover)}
+
+/* Reference typography: proportional text and natural spacing. */
+html .radio-float{font-family:var(--font-main);letter-spacing:normal}
+html .radio-float #currentTime{letter-spacing:normal}
+html .radio-float .app-version{font-family:var(--font-main);letter-spacing:normal}
+
+/* User-positioned floating panel: geometry is owned by one controller. */
+html main .radio-float.geometry-managed {
+ left:var(--panel-x)!important;top:var(--panel-y)!important;right:auto!important;bottom:auto!important;
+ width:var(--panel-w)!important;height:var(--panel-h)!important;max-height:none!important;
+ touch-action:none;
+}
+html .geometry-managed header,html .geometry-managed .panel-grip {cursor:grab;user-select:none;touch-action:none}
+html .geometry-managed #stations{touch-action:pan-y}
+html .geometry-managed input,html .geometry-managed select,html .geometry-managed a{touch-action:manipulation}
+html .geometry-managed.is-manipulating,html .geometry-managed.is-manipulating *{cursor:grabbing!important;user-select:none}
+html .geometry-managed .resize-handle{position:absolute;z-index:1500;margin:0;padding:0;border:0;background:transparent;touch-action:none}
+html .geometry-managed .handle-n,html .geometry-managed .handle-s{left:16px;right:16px;height:6px;cursor:ns-resize}
+html .geometry-managed .handle-n{top:0}html .geometry-managed .handle-s{bottom:0}
+html .geometry-managed .handle-e,html .geometry-managed .handle-w{top:16px;bottom:16px;width:6px;cursor:ew-resize}
+html .geometry-managed .handle-e{right:0}html .geometry-managed .handle-w{left:0}
+html .geometry-managed .handle-ne,html .geometry-managed .handle-nw,html .geometry-managed .handle-se,html .geometry-managed .handle-sw{width:16px;height:16px}
+html .geometry-managed .handle-ne{top:0;right:0;cursor:nesw-resize}html .geometry-managed .handle-nw{top:0;left:0;cursor:nwse-resize}
+html .geometry-managed .handle-se{bottom:0;right:0;cursor:nwse-resize}html .geometry-managed .handle-sw{bottom:0;left:0;cursor:nesw-resize}
+html .geometry-managed.is-collapsed .resize-handle{display:none}
+html .geometry-managed .resize-handle:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
