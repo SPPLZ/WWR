@@ -1,0 +1,9 @@
+/* Google Material Symbols, served as an official icon font (Apache 2.0). */
+html .theme-toggle,html #play,html #mute,html #favoriteNow,html .heart,html .country-search > span,html .random > span{font-size:0}
+html .theme-toggle::after,html #play::before,html #mute::before,html #favoriteNow::before,html .heart::before,html #listView::before,html #gridView::before,html .country-search > span::before,html .random > span::before{font-family:'Material Symbols Outlined';font-weight:400;font-style:normal;font-size:22px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+html .theme-toggle::after{content:'dark_mode';font-size:19px}html[data-theme='dark'] .theme-toggle::after{content:'light_mode'}
+html #play::before{content:'play_arrow';font-size:28px;font-variation-settings:'FILL' 1}html #play[aria-label='일시정지']::before{content:'pause'}
+html #mute::before{content:'volume_up'}html #mute[aria-label='음소거 해제']::before{content:'volume_off'}
+html #favoriteNow::before,html .heart::before{content:'favorite'}html #favoriteNow[aria-pressed='true']::before,html .heart[aria-pressed='true']::before{font-variation-settings:'FILL' 1}
+html #listView::before{content:'view_list';font-size:20px}html #gridView::before{content:'grid_view';font-size:20px}
+html .country-search > span::before{content:'search';font-size:20px}html .random > span::before{content:'shuffle';font-size:18px}

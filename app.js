@@ -132,11 +132,25 @@ $('countryResults').addEventListener('keydown',e=>{const buttons=[...$('countryR
 document.addEventListener('click',e=>{if(!e.target.closest('.country-search-wrap'))$('countryResults').hidden=true});
 
 function setStationArt(element,station){
-  element.replaceChildren();element.style.removeProperty('--logo-image');element.classList.remove('code-art');const code=String(station.countrycode||'').toUpperCase();
-  const img=document.createElement('img');img.loading=element.id==='art'?'eager':'lazy';img.decoding='async';img.referrerPolicy='no-referrer';
-  const fallback=()=>{element.classList.add('code-art');const hue=[...code].reduce((n,c)=>n*31+c.charCodeAt(0),0)%360;element.style.setProperty('--art-hue',hue);element.textContent=/^[A-Z]{2}$/.test(code)?code:'♪'};
-  element.append(img);let logo='';try{const url=new URL(String(station.favicon||'').trim());if(url.protocol==='https:'||url.protocol==='http:'){url.protocol='https:';logo=url.href}}catch{}
-  if(logo){element.style.setProperty('--logo-image','url('+JSON.stringify(logo)+')');img.alt=station.name+' 로고';img.onerror=fallback;img.src=logo}else fallback();
+  const code=String(station.countrycode||'').toUpperCase();
+  element.replaceChildren();element.style.removeProperty('--logo-image');element.classList.add('code-art');
+  const hue=[...code].reduce((n,c)=>n*31+c.charCodeAt(0),0)%360;element.style.setProperty('--art-hue',hue);
+  const placeholder=document.createElement('span');placeholder.textContent=/^[A-Z]{2}$/.test(code)?code:'♪';element.append(placeholder);
+  const candidates=[];
+  const add=value=>{try{const u=new URL(value);if(!/^https?:$/.test(u.protocol))return;u.protocol='https:';if(!candidates.includes(u.href))candidates.push(u.href)}catch{}};
+  // Verified on the broadcasters' official websites, 2026-10-14.
+  if(code==='KR'&&/^YTN\b/i.test(station.name||''))add('https://radio.ytn.co.kr/img/_top/new_logo_v2.jpg');
+  if(code==='KR'&&/^CBS\b/i.test(station.name||''))add('https://www.cbs.co.kr/data/cbs/upload/save/company/cbs16901960123237.png');
+  add(station.favicon);
+  try{const home=new URL(station.homepage);if(/^https?:$/.test(home.protocol))add(new URL('/favicon.ico',home).href)}catch{}
+  const failed=setStationArt.failed||(setStationArt.failed=new Set());
+  const img=document.createElement('img');img.loading=element.id==='art'?'eager':'lazy';img.decoding='async';img.referrerPolicy='no-referrer';img.alt=station.name+' 로고';img.style.opacity='0';
+  let active='';
+  function next(){if(img.parentNode!==element)return;active=candidates.shift();while(active&&failed.has(active))active=candidates.shift();if(!active){img.remove();element.style.removeProperty('--logo-image');return}img.src=active}
+  img.onerror=()=>{failed.add(active);next()};
+  img.onload=()=>{if(img.parentNode!==element)return;if(img.naturalWidth<2||img.naturalHeight<2){failed.add(active);next();return}placeholder.remove();element.classList.remove('code-art');element.style.setProperty('--logo-image','url('+JSON.stringify(active)+')');img.style.opacity='1'};
+  element.append(img);next();
 }
 
 document.addEventListener("wwr-theme-change",()=>renderMarkers(visible()));
+
