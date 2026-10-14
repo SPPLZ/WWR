@@ -12,13 +12,13 @@ function initPanelGeometry(shell, grip, setOpen) {
     const b = bounds();
     state.w = clamp(state.w, Math.min(320,b.w), b.w);
     state.h = clamp(state.h, Math.min(480,b.h), b.h);
-    const height = collapsed() ? 152 : state.h;
+    const height = collapsed() ? 121 : state.h;
     state.x = clamp(state.x,12, Math.max(12,innerWidth-state.w-12));
     state.y = clamp(state.y,12, Math.max(12,innerHeight-height-12));
   }
   function paint() {
     fit();
-    for (const [name,value] of Object.entries({x:state.x,y:state.y,w:state.w,h:collapsed()?152:state.h})) {
+    for (const [name,value] of Object.entries({x:state.x,y:state.y,w:state.w,h:collapsed()?121:state.h})) {
       shell.style.setProperty('--panel-'+name,value+'px');
     }
   }
@@ -97,9 +97,9 @@ function initPanelGeometry(shell, grip, setOpen) {
     if(!open) {
       const bottomGap = innerHeight - state.y - state.h;
       collapseAnchor = bottomGap < state.y ? 'bottom' : 'top';
-      if(collapseAnchor === 'bottom') state.y += state.h - 152;
+      if(collapseAnchor === 'bottom') state.y += state.h - 121;
     } else if(collapseAnchor === 'bottom') {
-      state.y -= state.h - 152;
+      state.y -= state.h - 121;
     }
     setOpen(open);
     paint();
